@@ -7,6 +7,17 @@ root.title("ParkManager")
 root.geometry("1500x700")
 root.configure(bg="green")
 
+def okno_park():
+    popup = Toplevel(root)
+    popup.title("Szczegóły parku/ogrodu")
+    popup.geometry("400x200")
+
+
+def okno_ogrodnik():
+    popup = Toplevel(root)
+    popup.title("Szczegóły pracownika")
+    popup.geometry("400x200")
+
 
 #DEFINICJA RAMEK
 
@@ -68,7 +79,7 @@ label_lista_pracownikow.grid(row=0, column=0, columnspan=3)
 listbox_lista_pracownikow=Listbox(ramka_lista_pracownikow)
 listbox_lista_pracownikow.grid(row=1, column=0, columnspan=3)
 
-button_pokaz_szczegoly=Button(ramka_lista_pracownikow, text="Pokaż szczegóły")
+button_pokaz_szczegoly=Button(ramka_lista_pracownikow, text="Pokaż szczegóły", command=lambda: okno_ogrodnik())
 button_pokaz_szczegoly.grid(row=2, column=0)
 
 button_usun_ogrodnika=Button(ramka_lista_pracownikow, text="Usuń ogrodnika")
@@ -118,7 +129,7 @@ label_lista_parkow.grid(row=0, column=0, columnspan=3)
 listbox_lista_parkow=Listbox(ramka_lista_parkow)
 listbox_lista_parkow.grid(row=1, column=0, columnspan=3)
 
-button_pokaz_szczegoly=Button(ramka_lista_parkow, text="Pokaż szczegóły")
+button_pokaz_szczegoly=Button(ramka_lista_parkow, text="Pokaż szczegóły", command=lambda:okno_park())
 button_pokaz_szczegoly.grid(row=2, column=0, sticky=E)
 
 button_usun_park=Button(ramka_lista_parkow, text="Usuń obiekt")
@@ -136,8 +147,5 @@ map_widget.set_position(52.0, 21.3)
 map_widget.set_zoom(6)
 map_widget.grid(row=0, column=0)
 
-# frm = ttk.Frame(root, padding=10)
-# frm.grid()
-# ttk.Label(frm, text="witam").grid(column=0, row=0)
-# ttk.Button(frm, text="Quit", command=root.destroy).grid(column=1, row=0)
+
 root.mainloop()
