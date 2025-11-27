@@ -1,6 +1,8 @@
 from tkinter import *
 import tkintermapview
 
+from notes import add_employees
+
 #OKNO GLOWNE APLIKACJI
 root = Tk()
 root.title("ParkManager")
@@ -18,6 +20,20 @@ def okno_ogrodnik():
     popup.title("Szczegóły pracownika")
     popup.geometry("400x200")
 
+
+def get_employee_info():
+    name:str=entry_name.get()
+    workplace:str=entry_workplace.get()
+    birth:int=int(entry_birth.get())
+    photo:str=entry_photo.get()
+
+    add_employees(name,workplace,birth,photo)
+
+    entry_name.delete(0, END)
+    entry_workplace.delete(0, END)
+    entry_birth.delete(0, END)
+    entry_photo.delete(0, END)
+    entry_name.focus()
 
 #DEFINICJA RAMEK
 
@@ -67,7 +83,7 @@ entry_birth.grid(row=3, column=1)
 entry_photo=Entry(ramka_formularz_pracownikow)
 entry_photo.grid(row=4, column=1)
 
-button_dodaj_ogrodnika=Button(ramka_formularz_pracownikow, text="Dodaj ogrodnika")
+button_dodaj_ogrodnika=Button(ramka_formularz_pracownikow, text="Dodaj ogrodnika", command=get_employee_info)
 button_dodaj_ogrodnika.grid(row=5, column=0, columnspan=2)
 
 
@@ -94,8 +110,8 @@ button_edytuj_pracownika.grid(row=2, column=2)
 label_form=Label(ramka_formularz_parkow, text="Wprowadź park/ogród: ")
 label_form.grid(row=0, column=0, columnspan=2)
 
-label_name=Label(ramka_formularz_parkow, text="Nazwa: ")
-label_name.grid(row=1, column=0)
+label_alias=Label(ramka_formularz_parkow, text="Nazwa: ")
+label_alias.grid(row=1, column=0)
 
 label_adress=Label(ramka_formularz_parkow, text="Adres: ")
 label_adress.grid(row=2, column=0)
@@ -103,11 +119,11 @@ label_adress.grid(row=2, column=0)
 label_type=Label(ramka_formularz_parkow, text="Typ: ")
 label_type.grid(row=3, column=0)
 
-label_photo=Label(ramka_formularz_parkow, text="Logo: ")
-label_photo.grid(row=4, column=0)
+label_logo=Label(ramka_formularz_parkow, text="Logo: ")
+label_logo.grid(row=4, column=0)
 
-entry_name=Entry(ramka_formularz_parkow)
-entry_name.grid(row=1, column=1)
+entry_alias=Entry(ramka_formularz_parkow)
+entry_alias.grid(row=1, column=1)
 
 entry_adress=Entry(ramka_formularz_parkow)
 entry_adress.grid(row=2, column=1)
@@ -115,8 +131,8 @@ entry_adress.grid(row=2, column=1)
 entry_type=Entry(ramka_formularz_parkow)
 entry_type.grid(row=3, column=1, sticky=E)
 
-entry_photo=Entry(ramka_formularz_parkow)
-entry_photo.grid(row=4, column=1, sticky=E)
+entry_logo=Entry(ramka_formularz_parkow)
+entry_logo.grid(row=4, column=1, sticky=E)
 
 button_dodaj_park=Button(ramka_formularz_parkow, text="Dodaj park/ogród")
 button_dodaj_park.grid(row=5, column=0, columnspan=2, sticky=E)
