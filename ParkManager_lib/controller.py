@@ -24,6 +24,15 @@ def update_employee(employees_data: list) -> None:
             employee['birth'] = input('Podaj nowy rok urodzenia pracownia: ')
 
 
+def remove_employee(employees_data: list) -> None:
+    tmp_name: str=input('Podaj imie pracownika do usuniecia: ')
+    for employee in employees_data:
+        if employee['name'] == tmp_name:
+            employees_data.remove(employee)
+
+
 add_employee(employees)
 update_employee(employees)
+add_employee(employees)
+remove_employee(employees)
 show_employee(employees)
