@@ -1,7 +1,7 @@
 from tkinter import *
 import tkintermapview
 
-from notes import add_employees
+
 
 #OKNO GLOWNE APLIKACJI
 root = Tk()
@@ -21,13 +21,12 @@ def okno_ogrodnik():
     popup.geometry("400x200")
 
 
-def get_employee_info():
+def get_employee_info(employee_info: list):
     name:str=entry_name.get()
     workplace:str=entry_workplace.get()
     birth:int=int(entry_birth.get())
     photo:str=entry_photo.get()
 
-    add_employees(name,workplace,birth,photo)
 
     entry_name.delete(0, END)
     entry_workplace.delete(0, END)
@@ -83,7 +82,7 @@ entry_birth.grid(row=3, column=1)
 entry_photo=Entry(ramka_formularz_pracownikow)
 entry_photo.grid(row=4, column=1)
 
-button_dodaj_ogrodnika=Button(ramka_formularz_pracownikow, text="Dodaj ogrodnika", command=get_employee_info)
+button_dodaj_ogrodnika=Button(ramka_formularz_pracownikow, text="Dodaj ogrodnika")
 button_dodaj_ogrodnika.grid(row=5, column=0, columnspan=2)
 
 
