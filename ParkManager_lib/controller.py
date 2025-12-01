@@ -15,5 +15,15 @@ def show_employee(employees_data: list) -> None:
    for employee in employees_data:
        print(f'Pracownik: {employee["name"]} pracuje w {employee["workplace"]}, urodził się w {employee["birth"]} roku.')
 
+def update_employee(employees_data: list) -> None:
+    tmp_name: str=input('Podaj imie pracownika do edycji: ')
+    for employee in employees_data:
+        if employee['name'] == tmp_name:
+            employee['name'] = input('Podaj nowe imie pracownika: ')
+            employee['workplace'] = input('Podaj nowe miejsce pracy: ')
+            employee['birth'] = input('Podaj nowy rok urodzenia pracownia: ')
+
+
 add_employee(employees)
+update_employee(employees)
 show_employee(employees)
