@@ -35,12 +35,17 @@ def okno_ogrodnik():
         Label(popup, text=f"Miejsce pracy: {employee.workplace}", font=("Arial", 12)).pack(pady=5)
         Label(popup, text=f"Rok urodzenia: {employee.birth}", font=("Arial", 12)).pack(pady=5)
         Label(popup, text=f"Zdjęcie: {employee.photo}", font=("Arial", 12)).pack(pady=5)
+        Label(popup, text=f"Współrzędne: {employee.coords[0]:.4f}, {employee.coords[1]:.4f}", font=("Arial", 10)).pack(pady=5)
+
+    map_widget.set_position(employee.coords[0], employee.coords[1])
+    map_widget.set_zoom(12)
+
 
 def odswiez_liste_pracownikow():
     listbox_lista_pracownikow.delete(0, END)
     employee_list = show_employee(employees)
-    for employee_str in employee_list:
-        listbox_lista_pracownikow.insert(END, employee_str)
+    for idx, employee_str in enumerate(employee_list):
+        listbox_lista_pracownikow.insert(idx, employee_str)
 
 
 def dodaj_ogrodnika():
@@ -59,7 +64,7 @@ def dodaj_ogrodnika():
         messagebox.showerror("Błąd", "Rok urodzenia musi być liczbą!")
         return
 
-    if add_employee(employees, name, workplace, birth, photo):
+    if add_employee(employees, name, workplace, birth, photo, map_widget):
         messagebox.showinfo("Sukces", f"Dodano ogrodnika: {name}")
         entry_name.delete(0, END)
         entry_workplace.delete(0, END)
@@ -111,9 +116,8 @@ def zaktualizuj_ogrodnika(i):
         messagebox.showerror("Błąd", "Rok urodzenia musi być liczbą!")
         return
 
-    old_name = employees[i].name
 
-    if update_employee(employees, old_name, name, workplace, birth, photo):
+    if update_employee(employees, i, name, workplace, birth, photo):
         messagebox.showinfo("Sukces", f"Zaktualizowano dane ogrodnika!")
         odswiez_liste_pracownikow()
 
@@ -135,11 +139,11 @@ def usun_ogrodnika():
         messagebox.showwarning("Uwaga", "Wybierz ogrodnika do usunięcia!")
         return
 
-    selected_text = listbox_lista_pracownikow.get(selection[0])
-    employee_name = selected_text.split(" - ")[0]
+    i = listbox_lista_pracownikow.index(ACTIVE)
+    employee_name = employees[i].name
 
     if messagebox.askyesno("Potwierdzenie", f"Czy na pewno chcesz usunąć ogrodnika: {employee_name}?"):
-        if remove_employee(employees, employee_name):
+        if remove_employee(employees, i):
             messagebox.showinfo("Sukces", f"Usunięto ogrodnika: {employee_name}")
             odswiez_liste_pracownikow()
         else:
