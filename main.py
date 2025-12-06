@@ -1,5 +1,7 @@
 from tkinter import *
+from tkinter import messagebox
 import tkintermapview
+from ParkManager_lib.controller import employees, add_employee, show_employee, remove_employee, update_employee, get_employee_by_name
 
 
 
@@ -12,27 +14,136 @@ root.configure(bg="green")
 def okno_park():
     popup = Toplevel(root)
     popup.title("Szczegóły parku/ogrodu")
-    popup.geometry("400x200")
+    popup.geometry("400x250")
 
 
 def okno_ogrodnik():
-    popup = Toplevel(root)
-    popup.title("Szczegóły pracownika")
-    popup.geometry("400x200")
+    selection = listbox_lista_pracownikow.curselection()
+    if not selection:
+        messagebox.showwarning("Uwaga", "Wybierz ogrodnika z listy!")
+        return
+
+    selected_text = listbox_lista_pracownikow.get(selection[0])
+    employee_name = selected_text.split(" - ")[0]
+    employee = get_employee_by_name(employees, employee_name)
+    if employee:
+        popup = Toplevel(root)
+        popup.title(f"Szczegóły ogrodnika - {employee_name}")
+        popup.geometry("400x250")
+
+        Label(popup, text=f"Imię: {employee.name}", font=("Arial", 12)).pack(pady=5)
+        Label(popup, text=f"Miejsce pracy: {employee.workplace}", font=("Arial", 12)).pack(pady=5)
+        Label(popup, text=f"Rok urodzenia: {employee.birth}", font=("Arial", 12)).pack(pady=5)
+        Label(popup, text=f"Zdjęcie: {employee.photo}", font=("Arial", 12)).pack(pady=5)
+
+def odswiez_liste_pracownikow():
+    listbox_lista_pracownikow.delete(0, END)
+    employee_list = show_employee(employees)
+    for employee_str in employee_list:
+        listbox_lista_pracownikow.insert(END, employee_str)
 
 
-def get_employee_info(employee_info: list):
-    name:str=entry_name.get()
-    workplace:str=entry_workplace.get()
-    birth:int=int(entry_birth.get())
-    photo:str=entry_photo.get()
+def dodaj_ogrodnika():
+    name = entry_name.get().strip()
+    workplace = entry_workplace.get().strip()
+    birth_str = entry_birth.get().strip()
+    photo = entry_photo.get().strip()
 
+    if not name or not workplace or not birth_str:
+        messagebox.showwarning("Uwaga", "Wypełnij wszystkie wymagane pola!")
+        return
+
+    try:
+        birth = int(birth_str)
+    except ValueError:
+        messagebox.showerror("Błąd", "Rok urodzenia musi być liczbą!")
+        return
+
+    if add_employee(employees, name, workplace, birth, photo):
+        messagebox.showinfo("Sukces", f"Dodano ogrodnika: {name}")
+        entry_name.delete(0, END)
+        entry_workplace.delete(0, END)
+        entry_birth.delete(0, END)
+        entry_photo.delete(0, END)
+        entry_name.focus()
+        odswiez_liste_pracownikow()
+    else:
+        messagebox.showerror("Błąd", "Nie udało się dodać ogrodnika")
+
+
+def edytuj_ogrodnika():
+    selection = listbox_lista_pracownikow.curselection()
+    if not selection:
+        messagebox.showwarning("Uwaga", "Wybierz ogrodnika do edycji!")
+        return
+
+    i = listbox_lista_pracownikow.index(ACTIVE)
 
     entry_name.delete(0, END)
+    entry_name.insert(0, employees[i].name)
+
     entry_workplace.delete(0, END)
+    entry_workplace.insert(0, employees[i].workplace)
+
     entry_birth.delete(0, END)
+    entry_birth.insert(0,employees[i].birth)
+
     entry_photo.delete(0, END)
-    entry_name.focus()
+    entry_photo.insert(0,employees[i].photo)
+
+    #ZMIANA PRZYCISKU
+
+    button_dodaj_ogrodnika.config(text='Zapisz zmiany', command=lambda: zaktualizuj_ogrodnika(i))
+
+
+def zaktualizuj_ogrodnika(i):
+    name = entry_name.get().strip()
+    workplace = entry_workplace.get().strip()
+    birth_str = entry_birth.get().strip()
+    photo = entry_photo.get().strip()
+
+    if not name or not workplace or not birth_str:
+        messagebox.showwarning("Uwaga", "Wypełnij wszystkie wymagane pola!")
+        return
+    try:
+        birth = int(birth_str)
+    except ValueError:
+        messagebox.showerror("Błąd", "Rok urodzenia musi być liczbą!")
+        return
+
+    old_name = employees[i].name
+
+    if update_employee(employees, old_name, name, workplace, birth, photo):
+        messagebox.showinfo("Sukces", f"Zaktualizowano dane ogrodnika!")
+        odswiez_liste_pracownikow()
+
+        button_dodaj_ogrodnika.config(text='Dodaj ogrodnika', command=dodaj_ogrodnika)
+
+        entry_name.delete(0, END)
+        entry_workplace.delete(0, END)
+        entry_birth.delete(0, END)
+        entry_photo.delete(0, END)
+        entry_name.focus()
+
+    else:
+        messagebox.showerror("Błąd", "Nie udało się zaktualizować ogrodnika!")
+
+
+def usun_ogrodnika():
+    selection = listbox_lista_pracownikow.curselection()
+    if not selection:
+        messagebox.showwarning("Uwaga", "Wybierz ogrodnika do usunięcia!")
+        return
+
+    selected_text = listbox_lista_pracownikow.get(selection[0])
+    employee_name = selected_text.split(" - ")[0]
+
+    if messagebox.askyesno("Potwierdzenie", f"Czy na pewno chcesz usunąć ogrodnika: {employee_name}?"):
+        if remove_employee(employees, employee_name):
+            messagebox.showinfo("Sukces", f"Usunięto ogrodnika: {employee_name}")
+            odswiez_liste_pracownikow()
+        else:
+            messagebox.showerror("Błąd", "Nie udało się usunąć ogrodnika!")
 
 #DEFINICJA RAMEK
 
@@ -82,7 +193,7 @@ entry_birth.grid(row=3, column=1)
 entry_photo=Entry(ramka_formularz_pracownikow)
 entry_photo.grid(row=4, column=1)
 
-button_dodaj_ogrodnika=Button(ramka_formularz_pracownikow, text="Dodaj ogrodnika")
+button_dodaj_ogrodnika=Button(ramka_formularz_pracownikow, text="Dodaj ogrodnika", command=dodaj_ogrodnika)
 button_dodaj_ogrodnika.grid(row=5, column=0, columnspan=2)
 
 
@@ -97,10 +208,10 @@ listbox_lista_pracownikow.grid(row=1, column=0, columnspan=3)
 button_pokaz_szczegoly=Button(ramka_lista_pracownikow, text="Pokaż szczegóły", command=lambda: okno_ogrodnik())
 button_pokaz_szczegoly.grid(row=2, column=0)
 
-button_usun_ogrodnika=Button(ramka_lista_pracownikow, text="Usuń ogrodnika")
-button_usun_ogrodnika.grid(row=2, column=1)
+button_usun_pracownika=Button(ramka_lista_pracownikow, text="Usuń ogrodnika", command=usun_ogrodnika)
+button_usun_pracownika.grid(row=2, column=1)
 
-button_edytuj_pracownika=Button(ramka_lista_pracownikow, text="Edytuj ogrodnika")
+button_edytuj_pracownika=Button(ramka_lista_pracownikow, text="Edytuj ogrodnika", command=edytuj_ogrodnika)
 button_edytuj_pracownika.grid(row=2, column=2)
 
 
