@@ -44,36 +44,27 @@ def okno_ogrodnik():
 def odswiez_liste_pracownikow():
     listbox_lista_pracownikow.delete(0, END)
     employee_list = show_employee(employees)
-    for idx, employee_str in enumerate(employee_list):
-        listbox_lista_pracownikow.insert(idx, employee_str)
+    for idx, employee in enumerate(employee_list):
+        listbox_lista_pracownikow.insert(idx, employee)
 
 
 def dodaj_ogrodnika():
-    name = entry_name.get().strip()
-    workplace = entry_workplace.get().strip()
-    birth_str = entry_birth.get().strip()
-    photo = entry_photo.get().strip()
+    name = entry_name.get()
+    workplace = entry_workplace.get()
+    birth = int(entry_birth.get())
+    photo = entry_photo.get()
 
-    if not name or not workplace or not birth_str:
-        messagebox.showwarning("Uwaga", "Wypełnij wszystkie wymagane pola!")
-        return
 
-    try:
-        birth = int(birth_str)
-    except ValueError:
-        messagebox.showerror("Błąd", "Rok urodzenia musi być liczbą!")
-        return
+    add_employee(employees, name, workplace, birth, photo, map_widget)
+    messagebox.showinfo("Sukces", f"Dodano ogrodnika: {name}")
+    entry_name.delete(0, END)
+    entry_workplace.delete(0, END)
+    entry_birth.delete(0, END)
+    entry_photo.delete(0, END)
+    entry_name.focus()
+    odswiez_liste_pracownikow()
 
-    if add_employee(employees, name, workplace, birth, photo, map_widget):
-        messagebox.showinfo("Sukces", f"Dodano ogrodnika: {name}")
-        entry_name.delete(0, END)
-        entry_workplace.delete(0, END)
-        entry_birth.delete(0, END)
-        entry_photo.delete(0, END)
-        entry_name.focus()
-        odswiez_liste_pracownikow()
-    else:
-        messagebox.showerror("Błąd", "Nie udało się dodać ogrodnika")
+
 
 
 def edytuj_ogrodnika():
@@ -102,35 +93,22 @@ def edytuj_ogrodnika():
 
 
 def zaktualizuj_ogrodnika(i):
-    name = entry_name.get().strip()
-    workplace = entry_workplace.get().strip()
-    birth_str = entry_birth.get().strip()
-    photo = entry_photo.get().strip()
+    name = entry_name.get()
+    workplace = entry_workplace.get()
+    birth = int(entry_birth.get())
+    photo = entry_photo.get()
 
-    if not name or not workplace or not birth_str:
-        messagebox.showwarning("Uwaga", "Wypełnij wszystkie wymagane pola!")
-        return
-    try:
-        birth = int(birth_str)
-    except ValueError:
-        messagebox.showerror("Błąd", "Rok urodzenia musi być liczbą!")
-        return
+    update_employee(employees, i, name, workplace, birth, photo)
+    messagebox.showinfo("Sukces", f"Zaktualizowano dane ogrodnika!")
+    odswiez_liste_pracownikow()
 
+    button_dodaj_ogrodnika.config(text='Dodaj ogrodnika', command=dodaj_ogrodnika)
 
-    if update_employee(employees, i, name, workplace, birth, photo):
-        messagebox.showinfo("Sukces", f"Zaktualizowano dane ogrodnika!")
-        odswiez_liste_pracownikow()
-
-        button_dodaj_ogrodnika.config(text='Dodaj ogrodnika', command=dodaj_ogrodnika)
-
-        entry_name.delete(0, END)
-        entry_workplace.delete(0, END)
-        entry_birth.delete(0, END)
-        entry_photo.delete(0, END)
-        entry_name.focus()
-
-    else:
-        messagebox.showerror("Błąd", "Nie udało się zaktualizować ogrodnika!")
+    entry_name.delete(0, END)
+    entry_workplace.delete(0, END)
+    entry_birth.delete(0, END)
+    entry_photo.delete(0, END)
+    entry_name.focus()
 
 
 def usun_ogrodnika():
@@ -143,11 +121,10 @@ def usun_ogrodnika():
     employee_name = employees[i].name
 
     if messagebox.askyesno("Potwierdzenie", f"Czy na pewno chcesz usunąć ogrodnika: {employee_name}?"):
-        if remove_employee(employees, i):
-            messagebox.showinfo("Sukces", f"Usunięto ogrodnika: {employee_name}")
-            odswiez_liste_pracownikow()
-        else:
-            messagebox.showerror("Błąd", "Nie udało się usunąć ogrodnika!")
+        remove_employee(employees, i)
+        messagebox.showinfo("Sukces", f"Usunięto ogrodnika: {employee_name}")
+        odswiez_liste_pracownikow()
+
 
 #DEFINICJA RAMEK
 
