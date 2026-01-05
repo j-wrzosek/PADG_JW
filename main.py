@@ -2,7 +2,7 @@ from tkinter import *
 from tkinter import messagebox
 import tkintermapview
 from ParkManager_lib.controller import employees, add_employee, show_employee, remove_employee, update_employee, get_employee_by_name
-
+from ParkManager_lib.controller import parks, add_park, show_park, remove_park, update_park, get_park_by_name
 
 
 #OKNO GLOWNE APLIKACJI
@@ -12,9 +12,61 @@ root.geometry("1500x700")
 root.configure(bg="green")
 
 def okno_park():
-    popup = Toplevel(root)
-    popup.title("Szczegóły parku/ogrodu")
-    popup.geometry("400x250")
+    selection = listbox_lista_parkow.curselection()
+    if not selection:
+        messagebox.showwarning("Uwaga", "Wybierz park z listy!")
+        return
+
+    selected_text = listbox_lista_parkow.get(selection[0])
+    park_name = selected_text.split(" - ")[0]
+    park = get_park_by_name(parks, park_name)
+    if park:
+        popup = Toplevel(root)
+        popup.title("Szczegóły parku/ogrodu")
+        popup.geometry("400x250")
+
+        Label(popup, text=f"Nazwa: {park.name}", font=("Arial", 12)).pack(pady=5)
+        Label(popup, text=f"Adres: {park.address}", font=("Arial", 12)).pack(pady=5)
+        Label(popup, text=f"Typ: {park.category}", font=("Arial", 12)).pack(pady=5)
+        Label(popup, text=f"Logo: {park.logo}", font=("Arial", 12)).pack(pady=5)
+        Label(popup, text=f"Współrzędne: {park.coords[0]:.4f}, {park.coords[1]:.4f}", font=("Arial", 10)).pack(
+            pady=5)
+
+    map_widget.set_position(park.coords[0], park.coords[1])
+    map_widget.set_zoom(12)
+
+def odswiez_liste_parkow():
+    listbox_lista_parkow.delete(0, END)
+    park_list = show_park(parks)
+    for idx, park in enumerate(park_list):
+        listbox_lista_parkow.insert(idx, park)
+
+
+def dodaj_park():
+    name = entry_name.get()
+    address = entry_address.get()
+    category = entry_category.get
+    logo = entry_logo.get()
+
+
+    add_park(parks, name, address, category, logo, map_widget)
+    messagebox.showinfo("Sukces", f"Dodano park: {name}")
+    entry_name.delete(0, END)
+    entry_address.delete(0, END)
+    entry_category.delete(0, END)
+    entry_logo.delete(0, END)
+    entry_name.focus()
+    odswiez_liste_pracownikow()
+
+
+
+
+
+
+
+
+
+
 
 
 def okno_ogrodnik():
