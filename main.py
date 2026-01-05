@@ -2,7 +2,7 @@ from tkinter import *
 from tkinter import messagebox
 import tkintermapview
 from ParkManager_lib.controller import employees, add_employee, show_employee, remove_employee, update_employee, get_employee_by_name
-
+from ParkManager_lib.controller import parks, add_park, show_park, remove_park, update_park, get_park_by_alias
 
 
 #OKNO GLOWNE APLIKACJI
@@ -12,9 +12,112 @@ root.geometry("1500x700")
 root.configure(bg="green")
 
 def okno_park():
-    popup = Toplevel(root)
-    popup.title("Szczegóły parku/ogrodu")
-    popup.geometry("400x250")
+    selection = listbox_lista_parkow.curselection()
+    if not selection:
+        messagebox.showwarning("Uwaga", "Wybierz park z listy!")
+        return
+
+    selected_text = listbox_lista_parkow.get(selection[0])
+    park_alias = selected_text.split(" - ")[0]
+    park = get_park_by_alias(parks, park_alias)
+    if park:
+        popup = Toplevel(root)
+        popup.title("Szczegóły parku/ogrodu")
+        popup.geometry("400x250")
+
+        Label(popup, text=f"Nazwa: {park.alias}", font=("Arial", 12)).pack(pady=5)
+        Label(popup, text=f"Adres: {park.address}", font=("Arial", 12)).pack(pady=5)
+        Label(popup, text=f"Typ: {park.category}", font=("Arial", 12)).pack(pady=5)
+        Label(popup, text=f"Logo: {park.logo}", font=("Arial", 12)).pack(pady=5)
+        Label(popup, text=f"Współrzędne: {park.coords[0]:.4f}, {park.coords[1]:.4f}", font=("Arial", 10)).pack(
+            pady=5)
+
+    map_widget.set_position(park.coords[0], park.coords[1])
+    map_widget.set_zoom(12)
+
+def odswiez_liste_parkow():
+    listbox_lista_parkow.delete(0, END)
+    park_list = show_park(parks)
+    for idx, park in enumerate(park_list):
+        listbox_lista_parkow.insert(idx, park)
+
+
+def dodaj_park():
+    alias = entry_alias.get()
+    address = entry_address.get()
+    category = entry_category.get()
+    logo = entry_logo.get()
+
+
+    add_park(parks, alias, address, category, logo, map_widget)
+    messagebox.showinfo("Sukces", f"Dodano park: {alias}")
+    entry_alias.delete(0, END)
+    entry_address.delete(0, END)
+    entry_category.delete(0, END)
+    entry_logo.delete(0, END)
+    entry_alias.focus()
+    odswiez_liste_parkow()
+
+
+def edytuj_park():
+    selection = listbox_lista_parkow.curselection()
+    if not selection:
+        messagebox.showwarning("Uwaga", "Wybierz park do edycji!")
+        return
+
+    i = listbox_lista_parkow.index(ACTIVE)
+
+    entry_alias.delete(0, END)
+    entry_alias.insert(0, parks[i].alias)
+
+    entry_address.delete(0, END)
+    entry_address.insert(0, parks[i].address)
+
+    entry_category.delete(0, END)
+    entry_category.insert(0,parks[i].category)
+
+    entry_logo.delete(0, END)
+    entry_logo.insert(0,parks[i].logo)
+
+    #ZMIANA PRZYCISKU
+
+    button_dodaj_park.config(text='Zapisz zmiany', command=lambda: zaktualizuj_park(i))
+
+
+def zaktualizuj_park(i):
+    alias = entry_alias.get()
+    address = entry_address.get()
+    category = entry_category.get()
+    logo = entry_logo.get()
+
+    update_park(parks, i, alias, address, category, logo)
+    messagebox.showinfo("Sukces", f"Zaktualizowano dane parku!")
+    odswiez_liste_parkow()
+
+    button_dodaj_park.config(text='Dodaj park', command=dodaj_park)
+
+    entry_alias.delete(0, END)
+    entry_address.delete(0, END)
+    entry_category.delete(0, END)
+    entry_logo.delete(0, END)
+    entry_alias.focus()
+
+
+def usun_park():
+    selection = listbox_lista_parkow.curselection()
+    if not selection:
+        messagebox.showwarning("Uwaga", "Wybierz park do usunięcia!")
+        return
+
+    i = listbox_lista_parkow.index(ACTIVE)
+    park_alias = parks[i].alias
+
+    if messagebox.askyesno("Potwierdzenie", f"Czy na pewno chcesz usunąć park: {park_alias}?"):
+        remove_park(parks, i)
+        messagebox.showinfo("Sukces", f"Usunięto park: {park_alias}")
+        odswiez_liste_parkow()
+
+
 
 
 def okno_ogrodnik():
@@ -216,16 +319,16 @@ label_logo.grid(row=4, column=0)
 entry_alias=Entry(ramka_formularz_parkow)
 entry_alias.grid(row=1, column=1)
 
-entry_adress=Entry(ramka_formularz_parkow)
-entry_adress.grid(row=2, column=1)
+entry_address=Entry(ramka_formularz_parkow)
+entry_address.grid(row=2, column=1)
 
-entry_type=Entry(ramka_formularz_parkow)
-entry_type.grid(row=3, column=1, sticky=E)
+entry_category=Entry(ramka_formularz_parkow)
+entry_category.grid(row=3, column=1, sticky=E)
 
 entry_logo=Entry(ramka_formularz_parkow)
 entry_logo.grid(row=4, column=1, sticky=E)
 
-button_dodaj_park=Button(ramka_formularz_parkow, text="Dodaj park/ogród")
+button_dodaj_park=Button(ramka_formularz_parkow, text="Dodaj park/ogród", command=dodaj_park)
 button_dodaj_park.grid(row=5, column=0, columnspan=2, sticky=E)
 
 
@@ -239,10 +342,10 @@ listbox_lista_parkow.grid(row=1, column=0, columnspan=3)
 button_pokaz_szczegoly=Button(ramka_lista_parkow, text="Pokaż szczegóły", command=lambda:okno_park())
 button_pokaz_szczegoly.grid(row=2, column=0, sticky=E)
 
-button_usun_park=Button(ramka_lista_parkow, text="Usuń obiekt")
+button_usun_park=Button(ramka_lista_parkow, text="Usuń obiekt", command=usun_park)
 button_usun_park.grid(row=2, column=1, sticky=E)
 
-button_edytuj_park=Button(ramka_lista_parkow, text="Edytuj obiekt")
+button_edytuj_park=Button(ramka_lista_parkow, text="Edytuj obiekt", command=edytuj_park)
 button_edytuj_park.grid(row=2, column=2, sticky=E)
 
 
