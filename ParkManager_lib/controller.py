@@ -79,10 +79,7 @@ def remove_park(parks_data: list, index: int) -> None:
     parks_data.pop(index)
 
 
-# if __name__ == '__main__':
-#     add_employee(employees)
-#     print(Employee)
-#     show_employee(employees)
+
 
 
 
