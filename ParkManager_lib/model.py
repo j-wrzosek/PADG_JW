@@ -1,6 +1,39 @@
 import requests
 from urllib.parse import quote
 import time
+import random
+
+
+class User:
+    def __init__(self, username: str, location: str, user_type: str, fav_park: str):
+        self.username = username
+        self.location = location
+        self.user_type = user_type
+        self.fav_park = fav_park
+        self.coords = self.get_coords()
+
+    def __str__(self):
+        return f"{self.username} - {self.location}"
+
+    def get_coords(self):
+        location_encoded = quote(self.location)
+        url: str = f'https://nominatim.openstreetmap.org/search?q={location_encoded},Poland&format=json&limit=1&addressdetails=1'
+        headers = {
+            'User-Agent': 'ParkManager/1.0 (https://github.com/j-wrzosek/PADG_JW; contact: 123456@gmail.com)',
+            'Accept': 'application/json',
+            'Accept-Language': 'pl,en'
+        }
+
+        time.sleep(4)
+        response = requests.get(url, headers=headers, timeout=5)
+        data = response.json()
+
+        if data and len(data) > 0:
+            latitude = float(data[0]['lat'])
+            longitude = float(data[0]['lon'])
+            print(f"Znaleziono: {latitude}, {longitude}")
+            return [latitude, longitude]
+        return [52.0 , 21.0]
 
 
 class Park:
@@ -44,9 +77,16 @@ class Employee:
         self.workplace = workplace
         self.birth = birth
         self.photo = photo
-        self.coords = self.get_coords()
-        self.marker = None
+
+        base_lat, base_lon = self.get_coords()
+        self.offset_lat = random.uniform(-0.003, 0.003)
+        self.offset_lon = random.uniform(-0.003, 0.003)
+
+        self.coords = [base_lat + self.offset_lat, base_lon + self.offset_lon]
+
+
         if map_widget:
+
             self.marker = map_widget.set_marker(self.coords[0], self.coords[1], text=self.name)
 
 
@@ -64,11 +104,7 @@ class Employee:
         }
 
         time.sleep(4)
-        print(f"Szuka współrzędnych dla: {self.workplace}")
-        print(f"URL: {url}")
         response = requests.get(url, headers=headers, timeout=5)
-        print(f"Status code: {response.status_code}")
-        print(f"Response text (first 200 chars): {response.text[:200]}")
         data = response.json()
 
         if data and len(data) > 0:
