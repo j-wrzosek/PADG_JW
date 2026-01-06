@@ -12,6 +12,66 @@ def start_app():
     root.geometry("1500x700")
     root.configure(bg="green")
 
+
+    def okno_uzytkownik():
+        popup = Toplevel(root)
+        popup.title("Użytkownicy")
+        popup.geometry("800x700")
+        ramka_lista_uzytkownikow = Frame(popup)
+        ramka_formularz_uzytkownikow = Frame(popup)
+        ramka_lista_uzytkownikow.grid(row=0, column=0)
+        ramka_formularz_uzytkownikow.grid(row=0, column=1)
+
+        label_lista_uzytkownikow=Label(ramka_lista_uzytkownikow, text="Lista użytkowników")
+        label_lista_uzytkownikow.grid(row=0, column=0, columnspan=3)
+
+        listbox_lista_obiektow = Listbox(ramka_lista_uzytkownikow)
+        listbox_lista_obiektow.grid(row=1, column=0, columnspan=3)
+
+        button_pokaz_szczegoly = Button(ramka_lista_uzytkownikow, text="Pokaż szczegóły")
+        button_pokaz_szczegoly.grid(row=2, column=0)
+
+        button_usun_obiekt = Button(ramka_lista_uzytkownikow, text="Usuń obiekt")
+        button_usun_obiekt.grid(row=2, column=1)
+
+        button_edytuj_obiekt = Button(ramka_lista_uzytkownikow, text="Edytuj obiekt")
+        button_edytuj_obiekt.grid(row=2, column=2)
+
+        label_formularz = Label(ramka_formularz_uzytkownikow, text="Formularz: ")
+        label_formularz.grid(row=0, column=0, columnspan=2)
+
+        label_imie = Label(ramka_formularz_uzytkownikow, text="Imie: ")
+        label_imie.grid(row=1, column=0, sticky=W)
+
+        label_lokalizacja = Label(ramka_formularz_uzytkownikow, text="Lokalizacja: ")
+        label_lokalizacja.grid(row=2, column=0, sticky=W)
+
+        label_typ = Label(ramka_formularz_uzytkownikow, text="Typ: ")
+        label_typ.grid(row=3, column=0, sticky=W)
+
+        label_fav_park = Label(ramka_formularz_uzytkownikow, text="Ulubiony park: ")
+        label_fav_park.grid(row=4, column=0, sticky=W)
+
+        entry_name = Entry(ramka_formularz_uzytkownikow)
+        entry_name.grid(row=1, column=1)
+
+        entry_lokalizacja = Entry(ramka_formularz_uzytkownikow)
+        entry_lokalizacja.grid(row=2, column=1)
+
+        entry_posty = Entry(ramka_formularz_uzytkownikow)
+        entry_posty.grid(row=3, column=1)
+
+        entry_img_url = Entry(ramka_formularz_uzytkownikow)
+        entry_img_url.grid(row=4, column=1)
+
+        button_dodaj_obiekt = Button(ramka_formularz_uzytkownikow, text="Dodaj obiekt")
+        button_dodaj_obiekt.grid(row=5, column=0, columnspan=2)
+
+
+
+
+
+
     def okno_park():
         selection = listbox_lista_parkow.curselection()
         if not selection:
@@ -218,6 +278,7 @@ def start_app():
 
     ramka_lista_pracownikow = Frame(root, bg="green")
     ramka_lista_parkow = Frame(root, bg="green")
+    ramka_uzytkownicy = Frame(root, bg="green")
     ramka_formularz_parkow = Frame(root, bg="green")
     ramka_formularz_pracownikow = Frame(root, bg="green")
     ramka_mapa = Frame(root)
@@ -225,8 +286,10 @@ def start_app():
     ramka_lista_pracownikow.grid(row=0, column=0)
     ramka_formularz_pracownikow.grid(row=0, column=1)
 
-    ramka_lista_parkow.grid(row=0, column=3)
-    ramka_formularz_parkow.grid(row=0, column=2)
+    ramka_uzytkownicy.grid(row=0, column=2)
+
+    ramka_lista_parkow.grid(row=0, column=4)
+    ramka_formularz_parkow.grid(row=0, column=3)
 
     ramka_mapa.grid(row=2, column=0, columnspan=5)
 
@@ -261,6 +324,12 @@ def start_app():
 
     button_dodaj_ogrodnika = Button(ramka_formularz_pracownikow, text="Dodaj ogrodnika", command=dodaj_ogrodnika)
     button_dodaj_ogrodnika.grid(row=5, column=0, columnspan=2)
+
+
+    #RAMKA UZYTKOWNICY
+
+    button_pokaz_uzytkownika = Button(ramka_uzytkownicy, text="Pokaż użytkowników", command=okno_uzytkownik)
+    button_pokaz_uzytkownika.grid(row=0, column=0)
 
     # RAMKA LISTA PRACOWNIKOW
 
