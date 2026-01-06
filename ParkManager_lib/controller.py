@@ -1,7 +1,39 @@
-from ParkManager_lib.model import Employee, Park
+from ParkManager_lib.model import Employee, Park, User
 
 employees:list = []
 parks:list = []
+users:list = []
+
+
+def show_user(users_data: list):
+    return [str(user) for user in users_data]
+
+
+def add_user(users_data: list, username: str, location: str, user_type: str, fav_park: str):
+
+    new_user = User(username=username,location=location,user_type=user_type,fav_park=fav_park)
+    users_data.append(new_user)
+
+
+
+def get_user_by_username(users_data: list, username: str):
+    for user in users_data:
+        if user.username == username:
+            return user
+    return None
+
+
+def update_user(users_data: list, index: int, username: str, location: str, user_type: str, fav_park: str):
+    user = users_data[index]
+    user.username = username
+    user.location = location
+    user.user_type = user_type
+    user.fav_park = fav_park
+    user.coords = user.get_coords()
+
+
+def remove_user(users_data: list, index: int):
+    users_data.pop(index)
 
 
 def show_employee(employees_data: list):

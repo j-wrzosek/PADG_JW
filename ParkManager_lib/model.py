@@ -4,6 +4,38 @@ import time
 import random
 
 
+class User:
+    def __init__(self, username: str, location: str, user_type: str, fav_park: str):
+        self.username = username
+        self.location = location
+        self.user_type = user_type
+        self.fav_park = fav_park
+        self.coords = self.get_coords()
+
+    def __str__(self):
+        return f"{self.username} - {self.location}"
+
+    def get_coords(self):
+        location_encoded = quote(self.location)
+        url: str = f'https://nominatim.openstreetmap.org/search?q={location_encoded},Poland&format=json&limit=1&addressdetails=1'
+        headers = {
+            'User-Agent': 'ParkManager/1.0 (https://github.com/j-wrzosek/PADG_JW; contact: 123456@gmail.com)',
+            'Accept': 'application/json',
+            'Accept-Language': 'pl,en'
+        }
+
+        time.sleep(4)
+        response = requests.get(url, headers=headers, timeout=5)
+        data = response.json()
+
+        if data and len(data) > 0:
+            latitude = float(data[0]['lat'])
+            longitude = float(data[0]['lon'])
+            print(f"Znaleziono: {latitude}, {longitude}")
+            return [latitude, longitude]
+        return [52.0 , 21.0]
+
+
 class Park:
     def __init__(self, alias:str, address:str, category:str, logo:str, map_widget=None):
         self.alias = alias
