@@ -3,6 +3,7 @@ from tkinter import messagebox
 import tkintermapview
 from ParkManager_lib.controller import employees, add_employee, show_employee, remove_employee, update_employee, get_employee_by_name
 from ParkManager_lib.controller import parks, add_park, show_park, remove_park, update_park, get_park_by_alias
+from ParkManager_lib.controller import users, add_user, show_user, remove_user, update_user, get_user_by_username
 
 
 def start_app():
@@ -11,6 +12,171 @@ def start_app():
     root.title("ParkManager")
     root.geometry("1500x700")
     root.configure(bg="green")
+
+
+    def okno_uzytkownik():
+        popup = Toplevel(root)
+        popup.title("Użytkownicy")
+        popup.geometry("580x270")
+        popup.transient(root)
+
+        def okno_szczegoly_uzytkownika():
+            selection = listbox_lista_obiektow.curselection()
+            if not selection:
+                messagebox.showwarning("Uwaga", "Wybierz użytkownika z listy!")
+                return
+
+            selected_text = listbox_lista_obiektow.get(selection[0])
+            username = selected_text.split(" - ")[0]
+
+            user = get_user_by_username(users, username)
+            if not user:
+                return
+
+            popup_szcz = Toplevel(popup)
+            popup_szcz.title(f"Szczegóły użytkownika - {user.username}")
+            popup_szcz.geometry("400x250")
+
+            Label(popup_szcz, text=f"Username: {user.username}", font=("Arial", 12)).pack(pady=5)
+            Label(popup_szcz, text=f"Lokalizacja: {user.location}", font=("Arial", 12)).pack(pady=5)
+            Label(popup_szcz, text=f"Typ: {user.user_type}", font=("Arial", 12)).pack(pady=5)
+            Label(popup_szcz, text=f"Ulubiony park: {user.fav_park}", font=("Arial", 12)).pack(pady=5)
+            Label(popup_szcz,text=f"Współrzędne: {user.coords[0]:.4f}, {user.coords[1]:.4f}",font=("Arial", 10)).pack(pady=5)
+
+
+
+
+        ramka_lista_uzytkownikow = Frame(popup)
+        ramka_formularz_uzytkownikow = Frame(popup)
+        ramka_lista_uzytkownikow.grid(row=0, column=0)
+        ramka_formularz_uzytkownikow.grid(row=0, column=1)
+
+
+        def odswiez_liste_uzytkownikow():
+            listbox_lista_obiektow.delete(0, END)
+            for idx, user in enumerate(show_user(users)):
+                listbox_lista_obiektow.insert(idx, user)
+
+        def dodaj_uzytkownika():
+            username = entry_imie.get()
+            location = entry_lokalizacja.get()
+            user_type = entry_typ.get()
+            fav_park = entry_fav_park.get()
+
+            add_user(users, username, location, user_type, fav_park)
+
+            messagebox.showinfo("Sukces", f"Dodano użytkownika: {username}")
+            odswiez_liste_uzytkownikow()
+
+            entry_imie.delete(0, END)
+            entry_lokalizacja.delete(0, END)
+            entry_typ.delete(0, END)
+            entry_fav_park.delete(0, END)
+
+        def edytuj_uzytkownika():
+            selection = listbox_lista_obiektow.curselection()
+            if not selection:
+                messagebox.showwarning("Uwaga", "Wybierz użytkownika do edycji!")
+                return
+
+            i = listbox_lista_obiektow.index(ACTIVE)
+            user = users[i]
+
+            entry_imie.delete(0, END)
+            entry_imie.insert(0, user.username)
+
+            entry_lokalizacja.delete(0, END)
+            entry_lokalizacja.insert(0, user.location)
+
+            entry_typ.delete(0, END)
+            entry_typ.insert(0, user.user_type)
+
+            entry_fav_park.delete(0, END)
+            entry_fav_park.insert(0, user.fav_park)
+
+            button_dodaj_obiekt.config(
+                text="Zapisz zmiany",
+                command=lambda: zaktualizuj_uzytkownika(i)
+            )
+
+        def zaktualizuj_uzytkownika(i):
+            username = entry_imie.get()
+            location = entry_lokalizacja.get()
+            user_type = entry_typ.get()
+            fav_park = entry_fav_park.get()
+
+            update_user(users, i, username, location, user_type, fav_park)
+            messagebox.showinfo("Sukces", "Zaktualizowano użytkownika")
+
+            odswiez_liste_uzytkownikow()
+
+            button_dodaj_obiekt.config(text="Dodaj użytkownika",command=dodaj_uzytkownika)
+
+            entry_imie.delete(0, END)
+            entry_lokalizacja.delete(0, END)
+            entry_typ.delete(0, END)
+            entry_fav_park.delete(0, END)
+            entry_imie.focus()
+
+        def usun_uzytkownika():
+            selection = listbox_lista_obiektow.curselection()
+            if not selection:
+                messagebox.showwarning("Uwaga", "Wybierz użytkownika do usunięcia!")
+                return
+
+            i = listbox_lista_obiektow.index(ACTIVE)
+            username = users[i].username
+
+            if messagebox.askyesno("Potwierdzenie", f"Czy na pewno chcesz usunąć użytkownika {username}?"):
+                remove_user(users, i)
+                odswiez_liste_uzytkownikow()
+
+        label_lista_uzytkownikow=Label(ramka_lista_uzytkownikow, text="Lista użytkowników")
+        label_lista_uzytkownikow.grid(row=0, column=0, columnspan=3)
+
+        listbox_lista_obiektow = Listbox(ramka_lista_uzytkownikow)
+        listbox_lista_obiektow.grid(row=1, column=0, columnspan=3)
+
+        button_pokaz_szczegoly = Button(ramka_lista_uzytkownikow, text="Pokaż szczegóły",command=okno_szczegoly_uzytkownika)
+        button_pokaz_szczegoly.grid(row=2, column=0)
+
+        button_usun_obiekt = Button(ramka_lista_uzytkownikow, text="Usuń użytkownika", command=usun_uzytkownika)
+        button_usun_obiekt.grid(row=2, column=1)
+
+        button_edytuj_obiekt = Button(ramka_lista_uzytkownikow, text="Edytuj użytkownika", command=edytuj_uzytkownika)
+        button_edytuj_obiekt.grid(row=2, column=2)
+
+        label_formularz = Label(ramka_formularz_uzytkownikow, text="Formularz: ")
+        label_formularz.grid(row=0, column=0, columnspan=2)
+
+        label_imie = Label(ramka_formularz_uzytkownikow, text="Imie: ")
+        label_imie.grid(row=1, column=0, sticky=W)
+
+        label_lokalizacja = Label(ramka_formularz_uzytkownikow, text="Lokalizacja: ")
+        label_lokalizacja.grid(row=2, column=0, sticky=W)
+
+        label_typ = Label(ramka_formularz_uzytkownikow, text="Typ: ")
+        label_typ.grid(row=3, column=0, sticky=W)
+
+        label_fav_park = Label(ramka_formularz_uzytkownikow, text="Ulubiony park: ")
+        label_fav_park.grid(row=4, column=0, sticky=W)
+
+        entry_imie = Entry(ramka_formularz_uzytkownikow)
+        entry_imie.grid(row=1, column=1)
+
+        entry_lokalizacja = Entry(ramka_formularz_uzytkownikow)
+        entry_lokalizacja.grid(row=2, column=1)
+
+        entry_typ = Entry(ramka_formularz_uzytkownikow)
+        entry_typ.grid(row=3, column=1)
+
+        entry_fav_park = Entry(ramka_formularz_uzytkownikow)
+        entry_fav_park.grid(row=4, column=1)
+
+        button_dodaj_obiekt = Button(ramka_formularz_uzytkownikow, text="Dodaj użytkownika", command=dodaj_uzytkownika)
+        button_dodaj_obiekt.grid(row=5, column=0, columnspan=2)
+
+        odswiez_liste_uzytkownikow()
 
     def okno_park():
         selection = listbox_lista_parkow.curselection()
@@ -34,7 +200,7 @@ def start_app():
                 pady=5)
 
         map_widget.set_position(park.coords[0], park.coords[1])
-        map_widget.set_zoom(12)
+        map_widget.set_zoom(17)
 
     def odswiez_liste_parkow():
         listbox_lista_parkow.delete(0, END)
@@ -135,7 +301,7 @@ def start_app():
                   font=("Arial", 10)).pack(pady=5)
 
         map_widget.set_position(employee.coords[0], employee.coords[1])
-        map_widget.set_zoom(12)
+        map_widget.set_zoom(17)
 
     def odswiez_liste_pracownikow():
         listbox_lista_pracownikow.delete(0, END)
@@ -218,6 +384,7 @@ def start_app():
 
     ramka_lista_pracownikow = Frame(root, bg="green")
     ramka_lista_parkow = Frame(root, bg="green")
+    ramka_uzytkownicy = Frame(root, bg="green")
     ramka_formularz_parkow = Frame(root, bg="green")
     ramka_formularz_pracownikow = Frame(root, bg="green")
     ramka_mapa = Frame(root)
@@ -225,8 +392,10 @@ def start_app():
     ramka_lista_pracownikow.grid(row=0, column=0)
     ramka_formularz_pracownikow.grid(row=0, column=1)
 
-    ramka_lista_parkow.grid(row=0, column=3)
-    ramka_formularz_parkow.grid(row=0, column=2)
+    ramka_uzytkownicy.grid(row=0, column=2)
+
+    ramka_lista_parkow.grid(row=0, column=4)
+    ramka_formularz_parkow.grid(row=0, column=3)
 
     ramka_mapa.grid(row=2, column=0, columnspan=5)
 
@@ -261,6 +430,12 @@ def start_app():
 
     button_dodaj_ogrodnika = Button(ramka_formularz_pracownikow, text="Dodaj ogrodnika", command=dodaj_ogrodnika)
     button_dodaj_ogrodnika.grid(row=5, column=0, columnspan=2)
+
+
+    #RAMKA UZYTKOWNICY
+
+    button_pokaz_uzytkownika = Button(ramka_uzytkownicy, text="Pokaż użytkowników", command=okno_uzytkownik)
+    button_pokaz_uzytkownika.grid(row=0, column=0)
 
     # RAMKA LISTA PRACOWNIKOW
 
