@@ -79,8 +79,8 @@ class Employee:
         self.photo = photo
 
         base_lat, base_lon = self.get_coords()
-        self.offset_lat = random.uniform(-0.003, 0.003)
-        self.offset_lon = random.uniform(-0.003, 0.003)
+        self.offset_lat = random.uniform(-0.001, 0.001)
+        self.offset_lon = random.uniform(-0.001, 0.001)
 
         self.coords = [base_lat + self.offset_lat, base_lon + self.offset_lon]
 

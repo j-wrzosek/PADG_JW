@@ -383,6 +383,23 @@ def start_app():
 
     def filtruj_pracownikow():
         selection = listbox_lista_parkow.curselection()
+        if not selection:
+            return
+
+        selected_text = listbox_lista_parkow.get(selection[0])
+        park_alias = selected_text.split(" - ")[0].strip()
+        park = get_park_by_alias(parks, park_alias)
+        if not park:
+            return
+
+        listbox_lista_pracownikow.selection_clear(0, END)
+
+        for idx, employee in enumerate(employees):
+            if employee.workplace.lower() == park.alias.lower():
+                listbox_lista_pracownikow.selection_set(idx)
+
+        map_widget.set_position(park.coords[0], park.coords[1])
+        map_widget.set_zoom(17)
 
     # DEFINICJA RAMEK
 
@@ -506,7 +523,7 @@ def start_app():
     button_edytuj_park = Button(ramka_lista_parkow, text="Edytuj obiekt", command=edytuj_park)
     button_edytuj_park.grid(row=2, column=2, sticky=E)
 
-    button_filtruj_pracownikow = Button(ramka_lista_parkow, text="Filtruj pracowników", bg="blue")
+    button_filtruj_pracownikow = Button(ramka_lista_parkow, text="Filtruj pracowników", bg="blue", command=filtruj_pracownikow)
     button_filtruj_pracownikow.grid(row=3, column=0, columnspan=2, sticky=E)
 
     # RAMKA MAPY
