@@ -380,6 +380,10 @@ def start_app():
             messagebox.showinfo("Sukces", f"Usunięto ogrodnika: {employee_name}")
             odswiez_liste_pracownikow()
 
+
+    def filtruj_pracownikow():
+        selection = listbox_lista_parkow.curselection()
+
     # DEFINICJA RAMEK
 
     ramka_lista_pracownikow = Frame(root, bg="green")
@@ -442,7 +446,7 @@ def start_app():
     label_lista_pracownikow = Label(ramka_lista_pracownikow, text="Lista ogrodników")
     label_lista_pracownikow.grid(row=0, column=0, columnspan=3)
 
-    listbox_lista_pracownikow = Listbox(ramka_lista_pracownikow)
+    listbox_lista_pracownikow = Listbox(ramka_lista_pracownikow, selectmode=MULTIPLE)
     listbox_lista_pracownikow.grid(row=1, column=0, columnspan=3)
 
     button_pokaz_szczegoly = Button(ramka_lista_pracownikow, text="Pokaż szczegóły", command=lambda: okno_ogrodnik())
@@ -501,6 +505,9 @@ def start_app():
 
     button_edytuj_park = Button(ramka_lista_parkow, text="Edytuj obiekt", command=edytuj_park)
     button_edytuj_park.grid(row=2, column=2, sticky=E)
+
+    button_filtruj_pracownikow = Button(ramka_lista_parkow, text="Filtruj pracowników", bg="blue")
+    button_filtruj_pracownikow.grid(row=3, column=0, columnspan=2, sticky=E)
 
     # RAMKA MAPY
 
