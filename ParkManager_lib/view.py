@@ -94,10 +94,7 @@ def start_app():
             entry_fav_park.delete(0, END)
             entry_fav_park.insert(0, user.fav_park)
 
-            button_dodaj_obiekt.config(
-                text="Zapisz zmiany",
-                command=lambda: zaktualizuj_uzytkownika(i)
-            )
+            button_dodaj_obiekt.config(text="Zapisz zmiany",command=lambda: zaktualizuj_uzytkownika(i))
 
         def zaktualizuj_uzytkownika(i):
             username = entry_imie.get()
@@ -297,8 +294,7 @@ def start_app():
             Label(popup, text=f"Miejsce pracy: {employee.workplace}", font=("Arial", 12)).pack(pady=5)
             Label(popup, text=f"Rok urodzenia: {employee.birth}", font=("Arial", 12)).pack(pady=5)
             Label(popup, text=f"Zdjęcie: {employee.photo}", font=("Arial", 12)).pack(pady=5)
-            Label(popup, text=f"Współrzędne: {employee.coords[0]:.4f}, {employee.coords[1]:.4f}",
-                  font=("Arial", 10)).pack(pady=5)
+            Label(popup, text=f"Współrzędne: {employee.coords[0]:.4f}, {employee.coords[1]:.4f}",font=("Arial", 10)).pack(pady=5)
 
         map_widget.set_position(employee.coords[0], employee.coords[1])
         map_widget.set_zoom(17)
