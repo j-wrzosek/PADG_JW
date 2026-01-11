@@ -1,4 +1,5 @@
 from ParkManager_lib.model import Employee, Park, User
+import random
 
 employees:list = []
 parks:list = []
@@ -60,7 +61,11 @@ def update_employee(employees_data: list, index: int, name: str, workplace: str,
         employee.birth = birth
         employee.photo = photo
 
-        employee.coords = employee.get_coords()
+        base_lat, base_lon = employee.get_coords()
+        employee.offset_lat = random.uniform(-0.001, 0.001)
+        employee.offset_lon = random.uniform(-0.001, 0.001)
+        employee.coords = [base_lat + employee.offset_lat, base_lon + employee.offset_lon]
+
         if employee.marker:
             employee.marker.set_position(employee.coords[0], employee.coords[1])
             employee.marker.set_text(text=employee.name)
